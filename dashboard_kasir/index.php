@@ -11,7 +11,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'Petugas') {
 $id_outlet = $_SESSION['id_outlet'];
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// --- Statistik transaksi hari ini per outlet ---
+// Statistik transaksi hari ini per outlet
 $query = $conn->prepare("
   SELECT 
     COUNT(id_transaksi) AS total_transaksi,
@@ -34,7 +34,7 @@ $total_item = $stat['total_item'] ?? 0;
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Kasir | LakuGroup</title>
-  <link rel="icon" type="image/png" href="../images/logo_2.png">
+  <link rel="icon" type="image/png" href="../../images/logo_2.png">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
@@ -44,6 +44,12 @@ $total_item = $stat['total_item'] ?? 0;
       margin: 0;
       overflow-x: hidden;
     }
+
+    .main-content {
+      margin-left: 250px;
+      transition: all 0.3s ease;
+    }
+
     .header {
       background-color: #c7290f;
       color: #fff;
@@ -55,7 +61,9 @@ $total_item = $stat['total_item'] ?? 0;
       top: 0;
       z-index: 999;
     }
+
     .username { font-weight: 600; }
+
     .logout-btn {
       background-color: #fff;
       color: #c7290f;
@@ -64,7 +72,9 @@ $total_item = $stat['total_item'] ?? 0;
       border-radius: 6px;
       transition: 0.3s;
     }
+
     .logout-btn:hover { background-color: #eee; }
+
     .menu-toggle {
       display: none;
       background-color: #fff;
@@ -75,32 +85,37 @@ $total_item = $stat['total_item'] ?? 0;
       border-radius: 6px;
       margin-right: 15px;
     }
+
     @media (max-width: 991px) {
-      .main-content { margin-left: 0; transition: transform 0.3s ease; }
+      .main-content {
+        margin-left: 0;
+        transition: transform 0.3s ease;
+      }
       .menu-toggle { display: inline-block; }
     }
+
     .card {
       border: none;
       border-radius: 14px;
       transition: transform 0.25s ease, box-shadow 0.35s ease;
       background: #fff;
     }
+
     .card:hover {
       transform: scale(1.05);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
+
     .card i { color: #c7290f; }
-    .card h5 { font-size: 1.5rem; color: #333; }
-    .card p { color: #777; margin-bottom: 0; }
   </style>
 </head>
 <body>
   <?php include "sidebar_kasir.php"; ?>
 
-  <!-- Overlay agar layar gelap saat sidebar aktif -->
   <div class="overlay" id="overlay"></div>
 
   <div class="main-content" id="main-content">
+    <!-- Header -->
     <div class="header">
       <div class="d-flex align-items-center">
         <button class="menu-toggle" id="menu-toggle"><i class="bi bi-list"></i></button>
@@ -113,12 +128,14 @@ $total_item = $stat['total_item'] ?? 0;
       <a href="../logout.php" class="btn logout-btn">Logout</a>
     </div>
 
+    <!-- Konten utama -->
     <div class="container-fluid mt-4">
       <div class="p-4 bg-white rounded shadow-sm">
         <h4 class="fw-bold mb-3">Dashboard Kasir</h4>
         <p>Halo, <?= htmlspecialchars($_SESSION['nama']); ?>! Berikut ringkasan transaksi outlet hari ini.</p>
         <hr>
 
+        <!-- Statistik Kasir -->
         <div class="row mb-4">
           <div class="col-md-4 mb-3">
             <div class="card text-center py-4">
@@ -127,6 +144,7 @@ $total_item = $stat['total_item'] ?? 0;
               <p>Total Transaksi Hari Ini</p>
             </div>
           </div>
+
           <div class="col-md-4 mb-3">
             <div class="card text-center py-4">
               <i class="bi bi-box-seam fs-1"></i>
@@ -134,6 +152,7 @@ $total_item = $stat['total_item'] ?? 0;
               <p>Total Menu Terjual</p>
             </div>
           </div>
+
           <div class="col-md-4 mb-3">
             <div class="card text-center py-4">
               <i class="bi bi-cash-stack fs-1"></i>
@@ -143,6 +162,7 @@ $total_item = $stat['total_item'] ?? 0;
           </div>
         </div>
 
+        <!-- Menu Cepat -->
         <h5 class="fw-bold mt-4 mb-3">Menu Cepat</h5>
         <div class="row">
           <div class="col-md-4 mb-3">
@@ -154,6 +174,7 @@ $total_item = $stat['total_item'] ?? 0;
               </div>
             </div>
           </div>
+
           <div class="col-md-4 mb-3">
             <div class="card" onclick="window.location='riwayat_transaksi.php'">
               <div class="card-body text-center">
@@ -163,6 +184,7 @@ $total_item = $stat['total_item'] ?? 0;
               </div>
             </div>
           </div>
+
           <div class="col-md-4 mb-3">
             <div class="card" onclick="window.location='laporan_harian.php'">
               <div class="card-body text-center">
@@ -173,11 +195,11 @@ $total_item = $stat['total_item'] ?? 0;
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
+  <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
