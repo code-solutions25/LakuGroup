@@ -1,4 +1,35 @@
-<!-- Sidebar Kasir -->
+<?php
+// Deteksi level direktori untuk path yang tepat
+$is_subfolder = (strpos($_SERVER['PHP_SELF'], '/transaksi_baru/') !== false || 
+                 strpos($_SERVER['PHP_SELF'], '/riwayat_transaksi/') !== false ||
+                 strpos($_SERVER['PHP_SELF'], '/laporan_harian/') !== false ||
+                 strpos($_SERVER['PHP_SELF'], '/laporan_bulanan/') !== false);
+
+$path_level = $is_subfolder ? '../' : '';
+
+// Deteksi halaman aktif
+$current_folder = basename(dirname($_SERVER['PHP_SELF']));
+$current_file = basename($_SERVER['PHP_SELF']);
+
+// Fungsi untuk menentukan apakah menu aktif
+function isActive($page) {
+  global $current_file, $current_folder;
+  
+  if ($page === 'dashboard') {
+    return ($current_file === 'index.php' && $current_folder === 'dashboard_kasir');
+  } elseif ($page === 'transaksi_baru') {
+    return ($current_folder === 'transaksi_baru');
+  } elseif ($page === 'riwayat_transaksi') {
+    return ($current_folder === 'riwayat_transaksi');
+  } elseif ($page === 'laporan_harian') {
+    return ($current_folder === 'laporan_harian');
+  } elseif ($page === 'laporan_bulanan') {
+    return ($current_folder === 'laporan_bulanan');
+  }
+  
+  return false;
+}
+?>
 <style>
   .sidebar {
     width: 250px;
@@ -14,6 +45,7 @@
     padding-top: 20px;
     transition: all 0.35s ease;
     z-index: 1100;
+    overflow-y: auto;
   }
   .sidebar.active { left: 0; }
 
@@ -30,23 +62,77 @@
     display: flex;
     align-items: center;
     transition: background-color 0.3s;
+    position: relative;
   }
-  .sidebar a:hover, .sidebar a.active { background-color: #a61f0b; }
+  
+  .sidebar a i {
+    margin-right: 12px;
+    font-size: 1.1rem;
+  }
+  
+  .sidebar a:hover { background-color: #a61f0b; }
+  
+  .sidebar a.active { 
+    background-color: #a61f0b;
+    border-left: 4px solid #fff;
+    font-weight: 600;
+  }
 
   .menu-group { width: 100%; margin-top: 10px; }
+  
   .menu-title {
     padding: 12px 20px;
     display: flex;
     align-items: center;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
-  .submenu-container { display: none; flex-direction: column; background-color: #b22209; }
+  
+  .menu-title:hover {
+    background-color: #a61f0b;
+  }
+  
+  .menu-title i:first-child {
+    margin-right: 12px;
+    font-size: 1.1rem;
+  }
+  
+  .menu-title i.ms-auto {
+    margin-left: auto;
+    font-size: 0.9rem;
+  }
+  
+  .submenu-container { 
+    display: none; 
+    flex-direction: column; 
+    background-color: #b22209; 
+  }
+  
   .submenu-container.show { display: flex; }
-  .submenu-item { padding-left: 40px !important; }
-  .rotate { transform: rotate(180deg); transition: transform 0.3s ease; }
+  
+  .submenu-item { 
+    padding-left: 50px !important; 
+    font-size: 0.95rem;
+  }
+  
+  .submenu-item i {
+    margin-right: 10px;
+    font-size: 1rem;
+  }
+  
+  .rotate { 
+    transform: rotate(180deg); 
+    transition: transform 0.3s ease; 
+  }
 
-  .main-content { transition: transform 0.35s ease, filter 0.35s ease; }
-  .main-content.shifted { transform: translateX(250px); filter: brightness(0.6); }
+  .main-content { 
+    transition: transform 0.35s ease, filter 0.35s ease; 
+  }
+  
+  .main-content.shifted { 
+    transform: translateX(250px); 
+    filter: brightness(0.6); 
+  }
 
   .overlay {
     position: fixed;
@@ -58,6 +144,7 @@
     transition: opacity 0.35s ease;
     z-index: 1000;
   }
+  
   .overlay.active {
     opacity: 1;
     pointer-events: auto;
@@ -68,12 +155,17 @@
     .overlay { display: none; }
     .main-content.shifted { transform: none; filter: none; }
   }
+
+  /* Scrollbar untuk sidebar */
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-track { background: #a61f0b; }
+  .sidebar::-webkit-scrollbar-thumb { background: #fff; border-radius: 10px; }
 </style>
 
 <div class="sidebar" id="sidebar">
-  <img src="../images/logo_1.png" alt="Logo LakuGroup">
+  <img src="<?= $path_level ?>../images/logo_1.png" alt="Logo LakuGroup">
 
-  <a href="index.php" class="<?= $current_page == 'index.php' ? 'active' : '' ?>">
+  <a href="<?= $path_level ?>../dashboard_kasir/" class="<?= isActive('dashboard') ? 'active' : '' ?>">
     <i class="bi bi-house-door"></i> Dashboard
   </a>
 
@@ -83,10 +175,10 @@
       <i class="bi bi-chevron-down ms-auto" id="transaksiArrow"></i>
     </div>
     <div class="submenu-container" id="transaksiSubmenu">
-      <a href="transaksi_baru.php" class="submenu-item <?= $current_page == 'transaksi_baru.php' ? 'active' : '' ?>">
+      <a href="<?= $path_level ?>transaksi_baru/" class="submenu-item <?= isActive('transaksi_baru') ? 'active' : '' ?>">
         <i class="bi bi-plus-circle"></i> Transaksi Baru
       </a>
-      <a href="riwayat_transaksi.php" class="submenu-item <?= $current_page == 'riwayat_transaksi.php' ? 'active' : '' ?>">
+      <a href="<?= $path_level ?>riwayat_transaksi/" class="submenu-item <?= isActive('riwayat_transaksi') ? 'active' : '' ?>">
         <i class="bi bi-clock-history"></i> Riwayat Transaksi
       </a>
     </div>
@@ -98,10 +190,10 @@
       <i class="bi bi-chevron-down ms-auto" id="laporanArrow"></i>
     </div>
     <div class="submenu-container" id="laporanSubmenu">
-      <a href="laporan_harian.php" class="submenu-item <?= $current_page == 'laporan_harian.php' ? 'active' : '' ?>">
+      <a href="<?= $path_level ?>laporan_harian/" class="submenu-item <?= isActive('laporan_harian') ? 'active' : '' ?>">
         <i class="bi bi-calendar-day"></i> Laporan Harian
       </a>
-      <a href="laporan_bulanan.php" class="submenu-item <?= $current_page == 'laporan_bulanan.php' ? 'active' : '' ?>">
+      <a href="<?= $path_level ?>laporan_bulanan/" class="submenu-item <?= isActive('laporan_bulanan') ? 'active' : '' ?>">
         <i class="bi bi-calendar-month"></i> Laporan Bulanan
       </a>
     </div>
@@ -109,50 +201,68 @@
 </div>
 
 <script>
-  const menuToggle = document.getElementById('menu-toggle');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  const mainContent = document.getElementById('main-content');
+  document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const mainContent = document.getElementById('main-content');
 
-  if (menuToggle) {
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
-      overlay.classList.toggle('active');
-      mainContent.classList.toggle('shifted');
-    });
-  }
+    // Toggle sidebar on burger menu click
+    if (menuToggle) {
+      menuToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        mainContent.classList.toggle('shifted');
+      });
+    }
 
-  if (overlay) {
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('active');
-      overlay.classList.remove('active');
-      mainContent.classList.remove('shifted');
-    });
-  }
+    // Close sidebar when clicking overlay
+    if (overlay) {
+      overlay.addEventListener('click', function() {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        mainContent.classList.remove('shifted');
+      });
+    }
 
-  const transaksiMenu = document.getElementById('transaksiMenu');
-  const transaksiSubmenu = document.getElementById('transaksiSubmenu');
-  const transaksiArrow = document.getElementById('transaksiArrow');
-  transaksiMenu.addEventListener('click', () => {
-    transaksiSubmenu.classList.toggle('show');
-    transaksiArrow.classList.toggle('rotate');
+    // Transaksi submenu toggle
+    const transaksiMenu = document.getElementById('transaksiMenu');
+    const transaksiSubmenu = document.getElementById('transaksiSubmenu');
+    const transaksiArrow = document.getElementById('transaksiArrow');
+    
+    if (transaksiMenu) {
+      transaksiMenu.addEventListener('click', function() {
+        transaksiSubmenu.classList.toggle('show');
+        transaksiArrow.classList.toggle('rotate');
+      });
+    }
+
+    // Laporan submenu toggle
+    const laporanMenu = document.getElementById('laporanMenu');
+    const laporanSubmenu = document.getElementById('laporanSubmenu');
+    const laporanArrow = document.getElementById('laporanArrow');
+    
+    if (laporanMenu) {
+      laporanMenu.addEventListener('click', function() {
+        laporanSubmenu.classList.toggle('show');
+        laporanArrow.classList.toggle('rotate');
+      });
+    }
+
+    // Auto-expand submenu based on current page
+    const currentPath = window.location.pathname;
+    
+    // Auto expand Transaksi menu jika ada submenu yang aktif
+    if (currentPath.includes('transaksi_baru') || currentPath.includes('riwayat_transaksi')) {
+      transaksiSubmenu.classList.add('show');
+      transaksiArrow.classList.add('rotate');
+    }
+    
+    // Auto expand Laporan menu jika ada submenu yang aktif
+    if (currentPath.includes('laporan_harian') || currentPath.includes('laporan_bulanan')) {
+      laporanSubmenu.classList.add('show');
+      laporanArrow.classList.add('rotate');
+    }
   });
-
-  const laporanMenu = document.getElementById('laporanMenu');
-  const laporanSubmenu = document.getElementById('laporanSubmenu');
-  const laporanArrow = document.getElementById('laporanArrow');
-  laporanMenu.addEventListener('click', () => {
-    laporanSubmenu.classList.toggle('show');
-    laporanArrow.classList.toggle('rotate');
-  });
-
-  const currentPage = "<?= $current_page ?>";
-  if (['transaksi_baru.php','riwayat_transaksi.php'].includes(currentPage)) {
-    transaksiSubmenu.classList.add('show');
-    transaksiArrow.classList.add('rotate');
-  }
-  if (['laporan_harian.php','laporan_bulanan.php'].includes(currentPage)) {
-    laporanSubmenu.classList.add('show');
-    laporanArrow.classList.add('rotate');
-  }
 </script>
